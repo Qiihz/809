@@ -3,6 +3,13 @@ package handler
 import (
   "net/http"
   "fmt"
+  "math/rand"
+  "time"
+  "crypto/md5"
+  "encoding/hex"
+  "io"
+  "encoding/json"
+  "strings"
 )
 
 func getFakeID() string {
