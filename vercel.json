@@ -1,9 +1,9 @@
 {
   "cleanUrls": true,
-  "trailingSlash": true,
+  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "(.*)",
+      "source": "/.*/",
       "destination": "/api/index.go" 
     }
   ]
