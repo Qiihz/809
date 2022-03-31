@@ -3,8 +3,8 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "api/index.go" 
+      "source": ".*",
+      "destination": "/api/index.go" 
     }
   ]
 }
