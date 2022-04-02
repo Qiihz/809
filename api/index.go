@@ -43,7 +43,7 @@ func getUrl(ip, port string) *Response {
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(body))
 	var result *Response
-	if err := json.Unmarshal(body, &result); err != nil {  // Parse []byte to the go struct pointer
+	if err := json.Unmarshal(body, &result); err != nil {
                 fmt.Println("Can not unmarshal JSON")
 	}
 	return result
