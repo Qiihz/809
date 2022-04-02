@@ -1,45 +1,55 @@
-package handler
+package main
 
 import (
-  "net/http"
-  "fmt"
-  "math/rand"
-  "time"
-  "crypto/md5"
-  "encoding/hex"
-  "io"
-  "encoding/json"
-  "strings"
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
+	"io/ioutil"
+	"math/rand"
+	"net/http"
+	"time"
+        "encoding/json"
 )
 
-func getFakeID() string {
-	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	strb := []byte(str)
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	var result []byte
-	for i := 0; i < 22; i++ {
-		result = append(result, strb[r.Intn(len(strb))])
-	}
-	return string(result)
-}
-func getUrl(ip, port string) []string {
-	path := "if5ax/?fakeid=" + getFakeID() + "&spid=81117&pid=81117&spip=" + ip + "&spport=" + port
-	host := "http://dir.wo186.tv:809/"
-	m := md5.Sum([]byte(path + "3d99ff138e1f41e931e58617e7d128e2"))
-	key := hex.EncodeToString(m[:])
-	r, _ := http.Get(host + path + "&spkey=" + key)
-	body, _ := io.ReadAll(r.Body)
-	rj := map[string]string{}
-	json.Unmarshal(body, &rj)
-	p := strings.Index(rj["url"], "/if5ax")
-	t := strings.Index(rj["url"], "lsttm=")
-	return []string{rj["url"][7:p], rj["url"][p:], rj["url"][t+6 : t+20]}
-}
-func main(){
-  url:=getUrl("1.1.1.1", "443")
-  fmt.Println(url)
+type Response struct {
+	Resultcode string `json:"resultcode"`
+	Isvideo    int    `json:"isvideo"`
+	Overstep   int    `json:"overstep"`
+	URL        string `json:"url"`
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
-  main()
+func getFakeID() string {
+	const charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, 22)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
+func getUrl(ip, port string) *Response {
+	host := "http://dir.wo186.tv:809/"
+	path := "if5ax/?fakeid=" + getFakeID() + "&spid=31117&pid=31117&spip=" + ip + "&spport=" + port
+	m := md5.Sum([]byte(path + "3d99ff138e1f41e931e58617e7d128e2"))
+	key := hex.EncodeToString(m[:])
+
+	resp, err := http.Get(host + path + "&spkey=" + key)
+	if err != nil {
+		fmt.Println("No response from request")
+	}
+	defer resp.Body.Close()
+  
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(body))
+	var result *Response
+	if err := json.Unmarshal(body, &result); err != nil {  // Parse []byte to the go struct pointer
+                fmt.Println("Can not unmarshal JSON")
+	}
+	return result
+}
+
+func main() {
+	result := getUrl("23.224.47.131", "443")	
+	fmt.Println(result)
 }
