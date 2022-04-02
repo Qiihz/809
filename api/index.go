@@ -49,7 +49,7 @@ func getUrl(ip, port string) *Response {
 	return result
 }
 
-func main() {
+func main(w http.ResponseWriter, r *http.Request) {
 	result := getUrl("23.224.47.131", "443")	
 	fmt.Println(result)
 }
