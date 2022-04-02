@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"crypto/md5"
@@ -49,7 +49,7 @@ func getUrl(ip, port string) *Response {
 	return result
 }
 
-func main(w http.ResponseWriter, r *http.Request) {
-	result := getUrl("23.224.47.131", "443")	
+func Handler(w http.ResponseWriter, r *http.Request) {
+	result := getUrl("1.1.1.1", "443")	
 	fmt.Println(result)
 }
